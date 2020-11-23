@@ -66,7 +66,10 @@ public:
     };
 
 public:
-    RecastNavMesh(/* args */);
+    RecastNavMesh();
+    explicit RecastNavMesh(const float *poly_pick_ext,
+                           const struct Setting *setting,
+                           const class dtQueryFilter *filter);
     ~RecastNavMesh();
 
     /**
@@ -90,11 +93,15 @@ public:
 private:
     bool raw_build(InputGeom *geom, rcContext *ctx);
 
+    const float *default_poly_pick_ext() const;
+    const Setting *default_setting() const;
+    const dtQueryFilter *default_filter() const;
+
 private:
     class dtNavMesh *_nav_mesh;
     class dtNavMeshQuery *_nav_query;
 
-    const float *_poly_pick;
+    const float *_poly_pick_ext;
     const struct Setting *_setting;
     const class dtQueryFilter *_filter;
 };

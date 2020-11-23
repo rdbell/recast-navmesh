@@ -33,12 +33,78 @@ struct NavMeshTileHeader
 
 RecastNavMesh::RecastNavMesh(/* args */)
 {
-    _nav_mesh = nullptr;
+    _nav_mesh  = nullptr;
+    _nav_query = nullptr;
+
+    _filter        = default_filter();
+    _setting       = default_setting();
+    _poly_pick_ext = default_poly_pick_ext();
+}
+
+RecastNavMesh::RecastNavMesh(const float *poly_pick_ext,
+                             const struct Setting *setting,
+                             const class dtQueryFilter *filter)
+{
+    _nav_mesh  = nullptr;
+    _nav_query = nullptr;
+
+    _filter        = filter ? filter : default_filter();
+    _setting       = setting ? setting : default_setting();
+    _poly_pick_ext = poly_pick_ext ? poly_pick_ext : default_poly_pick_ext();
 }
 
 RecastNavMesh::~RecastNavMesh()
 {
     delete _nav_mesh;
+}
+
+const float *RecastNavMesh::default_poly_pick_ext() const
+{
+    // default poly pick ext from RecastDemo
+    static const float poly_pick_ext[] = {2.f, 4.f, 2.f};
+
+    return poly_pick_ext;
+}
+const RecastNavMesh::Setting *RecastNavMesh::default_setting() const
+{
+    static const Setting s = {
+        .cellSize   = 0.3,
+        .cellHeight = 0.2,
+
+        .agentMaxSlope = 45.,
+        .agentHeight   = 2.,
+        .agentMaxClimb = 0.9,
+        .agentRadius   = 0.6,
+
+        .edgeMaxLen      = 12.,
+        .edgeMaxError    = 1.3,
+        .regionMinSize   = 8.,
+        .regionMergeSize = 20.,
+        .vertsPerPoly    = 6.,
+
+        .detailSampleDist     = 6.,
+        .detailSampleMaxError = 1.,
+
+        .partitionType = SAMPLE_PARTITION_WATERSHED,
+    };
+
+    return &s;
+}
+const dtQueryFilter *RecastNavMesh::default_filter() const
+{
+    static dtQueryFilter filter;
+
+    // default filter from RecastDemo
+    filter.setIncludeFlags(SAMPLE_POLYFLAGS_ALL ^ SAMPLE_POLYFLAGS_DISABLED);
+    filter.setExcludeFlags(0);
+    filter.setAreaCost(SAMPLE_POLYAREA_GROUND, 1.);
+    filter.setAreaCost(SAMPLE_POLYAREA_WATER, 10.);
+    filter.setAreaCost(SAMPLE_POLYAREA_ROAD, 1.);
+    filter.setAreaCost(SAMPLE_POLYAREA_DOOR, 1.);
+    filter.setAreaCost(SAMPLE_POLYAREA_GRASS, 2.);
+    filter.setAreaCost(SAMPLE_POLYAREA_JUMP, 1.5);
+
+    return &filter;
 }
 
 // ported from RecastDemo bool Sample_SoloMesh::handleBuild()

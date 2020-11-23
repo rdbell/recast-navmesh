@@ -11,8 +11,10 @@ option(RECAST_NAVMESH_TOOLS "Build tools" ON)
 file(GLOB SRC_LIST
     "${RECAST_PATH}/Detour/Source/*.cpp"
     "${RECAST_PATH}/Recast/Source/*.cpp"
-    "${RECAST_PATH}/Recast/Source/InputGeom.cpp"
-    "${RECAST_PATH}/Recast/Source/MeshLoaderObj.cpp"
+    "${RECAST_PATH}/DebugUtils/Source/DebugDraw.cpp"
+    "${RECAST_PATH}/RecastDemo/Source/InputGeom.cpp"
+    "${RECAST_PATH}/RecastDemo/Source/MeshLoaderObj.cpp"
+    "${RECAST_PATH}/RecastDemo/Source/ChunkyTriMesh.cpp"
     "recast_navmesh.cpp"
 )
 
@@ -20,24 +22,27 @@ add_library(recast-navmesh STATIC ${SRC_LIST})
 target_include_directories(recast-navmesh PRIVATE
     ${RECAST_PATH}/Detour/Include
     ${RECAST_PATH}/Recast/Include
+    ${RECAST_PATH}/DebugUtils/Include
     ${RECAST_PATH}/RecastDemo/Include
 )
 
 ################################################################################
-# link_directories(
-#     ${LIBRARY_OUTPUT_PATH}
-# )
-file(GLOB_RECURSE SRC_LIST "tools.cpp")
-add_executable(tools ${SRC_LIST})
 
-target_include_directories(tools PRIVATE
+if (RECAST_NAVMESH_TOOLS)
+    file(GLOB_RECURSE SRC_LIST "tools.cpp")
+    add_executable(tools ${SRC_LIST})
 
-)
-
-target_link_libraries(tools
-    recast-navmesh
-)
+    target_link_libraries(tools
+        recast-navmesh
+    )
+endif()
 
 ################################################################################
-ADD_TEST(exe_test ${PROJECT_BINARY_DIR}/tools)
-ENABLE_TESTING()
+
+# make test CTEST_OUTPUT_ON_FAILURE=TRUE 可输出日志
+enable_testing()
+
+add_test(
+    NAME build_test
+    COMMAND ${PROJECT_BINARY_DIR}/tools build ${CMAKE_CURRENT_SOURCE_DIR}/recastnavigation/RecastDemo/Bin/Meshes/nav_test.obj ${PROJECT_BINARY_DIR}/nav_test.mesh
+)
