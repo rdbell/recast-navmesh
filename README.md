@@ -1,5 +1,5 @@
 # recast-navmesh
-Navigation-mesh Toolset base on [Recast Navigation](https://github.com/recastnavigation/recastnavigation). Recast Navigation is a excellent toolkit for navigation mesh, but it don't provides any api to load、build、save mesh data(Recast Demo containing all those functionality, just can't use them from command line).
+Navigation-mesh Toolset base on [Recast Navigation](https://github.com/recastnavigation/recastnavigation). Recast Navigation is a excellent toolkit for navigation mesh, but it don't provides any api to load、build、save mesh data(Recast Demo containing all those functionality, just can't use them from command line). And It mix SDL render code with path-finding code etc.
 
 So here this tool comes.
 
