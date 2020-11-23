@@ -65,6 +65,8 @@ public:
         int partitionType;
     };
 
+    static const int MAX_POLYS = 256;
+
 public:
     RecastNavMesh();
     explicit RecastNavMesh(const float *poly_pick_ext,
@@ -86,12 +88,30 @@ public:
 
     /**
      * save mesh data to file
-     * ported from RecastDemo void Sample::saveAll(const char* path, const dtNavMesh* mesh)
      */
     bool save(const char *path);
 
+    /**
+     * pathfinding(follow)
+     * right-handle coordinate, The upper right corner as the origin, x to right
+     * @return the actual point size,0 no path found, <0 error
+     */
+    int follow(float sx, float sy, float sz, float ex, float ey, float ez,
+               float *points, int size, float step = 0.5f);
+
+    /**
+     * pathfinding(straight)
+     * right-handle coordinate, The upper right corner as the origin, x to right
+     * @return the actual point size,0 no path found, <0 error
+     */
+    int straight(float sx, float sy, float sz, float ex, float ey, float ez,
+                 float *points, int size);
+
 private:
     bool raw_build(InputGeom *geom, rcContext *ctx);
+    int smooth(float *m_spos, float *m_epos, unsigned int *m_polys,
+               int m_npolys, unsigned int m_startRef, float *m_smoothPath,
+               int size, float step = 0.5f);
 
     const float *default_poly_pick_ext() const;
     const Setting *default_setting() const;

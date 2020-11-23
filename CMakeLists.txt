@@ -3,9 +3,15 @@ cmake_minimum_required(VERSION 3.5)
 project(Recast-NavMesh)
 
 # set the original recastnavigation path
-set(RECAST_PATH "recastnavigation")
+set(RECAST_PATH "${CMAKE_CURRENT_SOURCE_DIR}/recastnavigation")
 
 option(RECAST_NAVMESH_TOOLS "Build tools" ON)
+
+# cmake -DCMAKE_BUILD_TYPE=Strict
+set(CMAKE_CXX_STANDARD 11)
+if(CMAKE_BUILD_TYPE MATCHES Strict)
+    set(CMAKE_CXX_FLAGS "-O0 -g -pipe -Wall -pedantic -std=c++11")
+endif()
 
 ################################################################################
 file(GLOB SRC_LIST
@@ -44,5 +50,8 @@ enable_testing()
 
 add_test(
     NAME build_test
-    COMMAND ${PROJECT_BINARY_DIR}/tools build ${CMAKE_CURRENT_SOURCE_DIR}/recastnavigation/RecastDemo/Bin/Meshes/nav_test.obj ${PROJECT_BINARY_DIR}/nav_test.mesh
+    COMMAND ${PROJECT_BINARY_DIR}/tools
+    build
+    ${RECAST_PATH}/RecastDemo/Bin/Meshes/nav_test.obj
+    ${PROJECT_CURRENT_BINARY_DIR}/nav_test.mesh
 )
