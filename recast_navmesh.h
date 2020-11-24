@@ -74,6 +74,15 @@ public:
                            const class dtQueryFilter *filter);
     ~RecastNavMesh();
 
+    ////////////////////////////////////////////////////////////////////////////
+    /// wrap for DetourStatus.h, so no need to include submodule when use this
+    /// lib. Of couse you still can include DetourStatus.h and use dtStatusXX
+    /// if prefer
+
+    static bool is_succeed(unsigned int status);
+    static bool is_partia(unsigned int status);
+    ////////////////////////////////////////////////////////////////////////////
+
     /**
      * load mesh data pre generated from Recast
      * @param path a mesh data file
@@ -93,15 +102,16 @@ public:
 
     /**
      * pathfinding(follow)
-     * right-handle coordinate, The upper right corner as the origin, x to right
-     * @return the actual point size,0 no path found, <0 error
+     * right-handle coordinate, x axis right, y axis up
+     * @return status, use is_xx function to check fail.
      */
-    int follow(float sx, float sy, float sz, float ex, float ey, float ez,
-               float *points, int size, float step = 0.5f);
+    unsigned int follow(float sx, float sy, float sz, float ex, float ey,
+                        float ez, float *points, int max_size, int &use_size,
+                        float step = 0.5f);
 
     /**
      * pathfinding(straight)
-     * right-handle coordinate, The upper right corner as the origin, x to right
+     * right-handle coordinate, x axis right, y axis up
      * @return the actual point size,0 no path found, <0 error
      */
     int straight(float sx, float sy, float sz, float ex, float ey, float ez,

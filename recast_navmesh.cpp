@@ -788,8 +788,8 @@ bool RecastNavMesh::load(const char *path)
     if (_nav_mesh)
     {
         dtFreeNavMesh(_nav_mesh);
-        _nav_mesh = mesh;
     }
+    _nav_mesh = mesh;
 
     return true;
 }
@@ -1004,9 +1004,11 @@ int RecastNavMesh::smooth(float *m_spos, float *m_epos, unsigned int *m_polys,
  * right-handle coordinate, The upper right corner as the origin, x to right
  * @return the actual point size
  */
-int RecastNavMesh::follow(float sx, float sy, float sz, float ex, float ey,
-                          float ez, float *points, int size, float step)
+unsigned int RecastNavMesh::follow(float sx, float sy, float sz, float ex,
+                                   float ey, float ez, float *points,
+                                   int max_size, int &use_size, float step)
 {
+    use_size = 0;
     // ported form RecastDemo void NavMeshTesterTool::recalc()
     if (!_nav_mesh) return -1;
 
@@ -1037,6 +1039,17 @@ int RecastNavMesh::follow(float sx, float sy, float sz, float ex, float ey,
 
     if (!m_npolys) return 0;
 
-    return smooth(m_spos, m_epos, m_polys, m_npolys, m_startRef, points, size,
-                  step);
+    use_size = smooth(m_spos, m_epos, m_polys, m_npolys, m_startRef, points,
+                      max_size, step);
+
+    return status;
+}
+
+bool RecastNavMesh::is_succeed(unsigned int status)
+{
+    return dtStatusSucceed(status);
+}
+bool RecastNavMesh::is_partia(unsigned int status)
+{
+    return dtStatusDetail(status, DT_PARTIAL_RESULT);
 }
