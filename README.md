@@ -15,7 +15,7 @@ make
 make test
 ```
 
-## useage
+## usage
 
 * library
 
