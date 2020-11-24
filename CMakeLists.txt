@@ -72,3 +72,20 @@ add_test(
     -20 4 -13 -21 -2 29
 )
 set_tests_properties(follow_fail_test PROPERTIES WILL_FAIL TRUE)
+
+add_test(
+    NAME straight_test
+    COMMAND ${PROJECT_BINARY_DIR}/tools
+    straight
+    ${PROJECT_CURRENT_BINARY_DIR}/nav_test.mesh
+    19 -2 -23 -21 -2 29
+)
+
+add_test(
+    NAME straight_fail_test
+    COMMAND ${PROJECT_BINARY_DIR}/tools
+    follow
+    ${PROJECT_CURRENT_BINARY_DIR}/nav_test.mesh
+    -20 4 -13 -21 -2 29
+)
+set_tests_properties(straight_fail_test PROPERTIES WILL_FAIL TRUE)

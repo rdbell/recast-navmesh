@@ -112,10 +112,12 @@ public:
     /**
      * pathfinding(straight)
      * right-handle coordinate, x axis right, y axis up
-     * @return the actual point size,0 no path found, <0 error
+     * @param option Query options. (see: #dtStraightPathOptions)
+     * @return status, use is_xx function to check fail.
      */
-    int straight(float sx, float sy, float sz, float ex, float ey, float ez,
-                 float *points, int size);
+    unsigned int straight(float sx, float sy, float sz, float ex, float ey,
+                          float ez, float *points, int max_size, int &use_size,
+                          int option = 0);
 
 private:
     bool raw_build(InputGeom *geom, rcContext *ctx);

@@ -10,6 +10,8 @@
 int build(const char *from, const char *to);
 int follow(const char *file, float sx, float sy, float sz, float ex, float ey,
            float ez);
+int straight(const char *file, float sx, float sy, float sz, float ex, float ey,
+             float ez);
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +44,19 @@ int main(int argc, char *argv[])
         return follow(argv[2], strtof(argv[3], nullptr), strtof(argv[4], nullptr),
                       strtof(argv[5], nullptr), strtof(argv[6], nullptr),
                       strtof(argv[7], nullptr), strtof(argv[8], nullptr));
+    }
+    else if (0 == strcmp(argv[1], "straight"))
+    {
+        if (argc < 9)
+        {
+            std::cerr << "straight missing file path" << std::endl;
+            return -1;
+        }
+
+        return straight(argv[2], strtof(argv[3], nullptr),
+                        strtof(argv[4], nullptr), strtof(argv[5], nullptr),
+                        strtof(argv[6], nullptr), strtof(argv[7], nullptr),
+                        strtof(argv[8], nullptr));
     }
     else
     {
@@ -98,6 +113,42 @@ int follow(const char *file, float sx, float sy, float sz, float ex, float ey,
     unsigned int status =
         rnm.follow(sx, sy, sz, ex, ey, ez, points, max_size, use_size, 5.0);
     std::cout << "path follow from (" << sx << "," << sy << "," << sz
+              << ") to (" << ex << "," << ey << "," << ez << ")" << std::endl;
+    if (!RecastNavMesh::is_succeed(status))
+    {
+        std::cerr << "    FAIL" << std::endl;
+        return -1;
+    }
+
+    std::cout.precision(3);
+    for (int i = 0; i < use_size; i++)
+    {
+        float *point = &points[i * 3];
+        std::cout << "    " << point[0] << "," << point[1] << "," << point[2]
+                  << std::endl;
+    }
+
+    return RecastNavMesh::is_partia(status) ? 1 : 0;
+}
+
+int straight(const char *file, float sx, float sy, float sz, float ex, float ey,
+             float ez)
+{
+    RecastNavMesh rnm;
+
+    if (!rnm.load(file))
+    {
+        std::cerr << "load mesh data from " << file << " fail" << std::endl;
+        return -1;
+    }
+
+    int use_size              = 0;
+    static const int max_size = 256;
+    float points[max_size]    = {0};
+
+    unsigned int status =
+        rnm.straight(sx, sy, sz, ex, ey, ez, points, max_size, use_size, 5.0);
+    std::cout << "path straight from (" << sx << "," << sy << "," << sz
               << ") to (" << ex << "," << ey << "," << ez << ")" << std::endl;
     if (!RecastNavMesh::is_succeed(status))
     {

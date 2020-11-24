@@ -1010,12 +1010,12 @@ unsigned int RecastNavMesh::follow(float sx, float sy, float sz, float ex,
 {
     use_size = 0;
     // ported form RecastDemo void NavMeshTesterTool::recalc()
-    if (!_nav_mesh) return -1;
+    if (!_nav_mesh) return DT_FAILURE;
 
     if (!_nav_query)
     {
         _nav_query = dtAllocNavMeshQuery();
-        if (!_nav_query->init(_nav_mesh, 2048)) return -1;
+        if (!_nav_query->init(_nav_mesh, 2048)) return DT_FAILURE;
     }
 
     float m_spos[] = {sx, sy, sz};
@@ -1034,10 +1034,10 @@ unsigned int RecastNavMesh::follow(float sx, float sy, float sz, float ex,
                              m_polys, &m_npolys, MAX_POLYS);
     if (dtStatusFailed(status))
     {
-        return -1;
+        return DT_FAILURE;
     }
 
-    if (!m_npolys) return 0;
+    if (!m_npolys) return status;
 
     use_size = smooth(m_spos, m_epos, m_polys, m_npolys, m_startRef, points,
                       max_size, step);
@@ -1052,4 +1052,62 @@ bool RecastNavMesh::is_succeed(unsigned int status)
 bool RecastNavMesh::is_partia(unsigned int status)
 {
     return dtStatusDetail(status, DT_PARTIAL_RESULT);
+}
+
+/**
+ * pathfinding(straight)
+ * right-handle coordinate, x axis right, y axis up
+ * @return status, use is_xx function to check fail.
+ */
+unsigned int RecastNavMesh::straight(float sx, float sy, float sz, float ex,
+                                     float ey, float ez, float *points,
+                                     int max_size, int &use_size, int option)
+{
+    use_size = 0;
+    // ported form RecastDemo void NavMeshTesterTool::recalc()
+    if (!_nav_mesh) return DT_FAILURE;
+
+    if (!_nav_query)
+    {
+        _nav_query = dtAllocNavMeshQuery();
+        if (!_nav_query->init(_nav_mesh, 2048)) return DT_FAILURE;
+    }
+
+    float m_spos[] = {sx, sy, sz};
+    float m_epos[] = {ex, ey, ez};
+
+    dtPolyRef m_startRef;
+    dtPolyRef m_endRef;
+    _nav_query->findNearestPoly(m_spos, _poly_pick_ext, _filter, &m_startRef, 0);
+    _nav_query->findNearestPoly(m_epos, _poly_pick_ext, _filter, &m_endRef, 0);
+    if (!m_startRef || !m_endRef) return 0;
+
+    int m_npolys = 0;
+    dtPolyRef m_polys[MAX_POLYS];
+    dtStatus status =
+        _nav_query->findPath(m_startRef, m_endRef, m_spos, m_epos, _filter,
+                             m_polys, &m_npolys, MAX_POLYS);
+
+    if (!m_npolys) return status;
+
+    // In case of partial path, make sure the end point is clamped to the last polygon.
+    float epos[3];
+    dtVcopy(epos, m_epos);
+    if (m_polys[m_npolys - 1] != m_endRef)
+    {
+        status = _nav_query->closestPointOnPoly(m_polys[m_npolys - 1], m_epos,
+                                                epos, 0);
+        if (dtStatusFailed(status)) return status;
+    }
+
+    /// those out param unused for now
+    ///  @param[out]	straightPathFlags	Flags describing each point. (See:
+    ///  #dtStraightPathFlags) [opt]
+    ///  @param[out]	straightPathRefs	The reference id of the polygon that
+    ///  is being entered at each point. [opt]
+    status = _nav_query->findStraightPath(m_spos, epos, m_polys, m_npolys,
+                                          points, nullptr, nullptr, &use_size,
+                                          max_size, option);
+
+    return status;
 }
