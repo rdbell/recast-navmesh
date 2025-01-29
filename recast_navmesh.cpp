@@ -1,4 +1,5 @@
 #include <Recast.h>
+#include <iostream>
 #include <InputGeom.h>
 #include <DetourCommon.h>
 #include <DetourNavMesh.h>
