@@ -229,6 +229,7 @@ const float *RecastNavMesh::default_poly_pick_ext() const
 const RecastNavMesh::Setting *RecastNavMesh::default_setting() const
 {
     static Setting s;
+    s.tileSize   = 64;
     s.cellSize   = 0.3;
     s.cellHeight = 0.2;
 
@@ -247,7 +248,6 @@ const RecastNavMesh::Setting *RecastNavMesh::default_setting() const
     s.detailSampleMaxError = 1.;
 
     s.partitionType = SAMPLE_PARTITION_WATERSHED;
-    s.tileSize = 64;
 
     return &s;
 }

@@ -45,6 +45,7 @@ public:
      */
     struct Setting
     {
+        float tileSize;
         float cellSize;
         float cellHeight;
 
