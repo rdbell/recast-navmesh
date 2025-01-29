@@ -827,10 +827,18 @@ bool RecastNavMesh::build(const char *from)
 bool RecastNavMesh::save(const char *path)
 {
     const dtNavMesh *mesh = _nav_mesh;
-    if (!mesh) return false;
+    if (!mesh)
+    {
+        std::cerr << "No mesh data to save" << std::endl;
+        return false;
+    }
 
     FILE *fp = fopen(path, "wb");
-    if (!fp) return false;
+    if (!fp)
+    {
+        std::cerr << "Could not open " << path << " for writing" << std::endl;
+        return false;
+    }
 
     // Store header.
     NavMeshSetHeader header;
