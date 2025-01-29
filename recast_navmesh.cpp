@@ -247,6 +247,7 @@ const RecastNavMesh::Setting *RecastNavMesh::default_setting() const
     s.detailSampleMaxError = 1.;
 
     s.partitionType = SAMPLE_PARTITION_WATERSHED;
+    s.tileSize = 64;
 
     return &s;
 }
