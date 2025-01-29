@@ -288,6 +288,7 @@ bool RecastNavMesh::raw_build(InputGeom *m_geom, rcContext *m_ctx)
     dtStatus status                     = DT_SUCCESS;
     rcConfig m_cfg;
 
+    float m_tileSize             = _setting->tileSize;
     float m_cellSize             = _setting->cellSize;
     float m_cellHeight           = _setting->cellHeight;
     float m_agentMaxSlope        = _setting->agentMaxSlope;
@@ -325,6 +326,7 @@ bool RecastNavMesh::raw_build(InputGeom *m_geom, rcContext *m_ctx)
 
     // Init build configuration from GUI
     memset(&m_cfg, 0, sizeof(m_cfg));
+    m_cfg.tileSize               = m_tileSize;
     m_cfg.cs                     = m_cellSize;
     m_cfg.ch                     = m_cellHeight;
     m_cfg.walkableSlopeAngle     = m_agentMaxSlope;
